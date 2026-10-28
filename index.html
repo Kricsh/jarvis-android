@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;background:#07111f;color:#e9f7ff;
+  font-family:Arial,sans-serif;display:flex;align-items:center;
+  justify-content:center;padding:20px;text-align:center
+}
+.app{width:100%;max-width:420px}
+h1{letter-spacing:5px;color:#50eaff}
+.orb{
+  width:180px;height:180px;margin:35px auto;border-radius:50%;
+  border:3px solid #50eaff;
+  box-shadow:0 0 25px #168bca,inset 0 0 25px #168bca;
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;color:#50eaff
+}
+button{
+  background:#00c8e8;color:#00121b;border:0;border-radius:25px;
+  padding:15px 24px;font-size:17px;font-weight:bold;margin:6px
+}
+#answer{margin:22px 0;line-height:1.6;overflow-wrap:anywhere}
+.small{color:#9cb6c8;font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>J.A.R.V.I.S</h1>
+<p class="small">PERSONAL AI ASSISTANT</p>
+<div class="orb">J</div>
+<p id="status">SYSTEM ONLINE</p>
+<button onclick="speak()">🔊 बोलकर जवाब</button>
+<button onclick="listen()">🎙️ मुझसे बात करो</button>
+<div id="answer">नमस्ते! मैं तुम्हारा JARVIS हूँ।</div>
+<p class="small">आवाज़ के लिए Chrome की अनुमति आवश्यक हो सकती है।</p>
+</div>
+<script>
+function speak(text){
+  const msg=text||document.getElementById('answer').innerText;
+  if(!('speechSynthesis' in window)){
+    alert('इस ब्राउज़र में आवाज़ की सुविधा उपलब्ध नहीं है।');
+    return;
+  }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(msg);
+  u.lang='hi-IN';
+  speechSynthesis.speak(u);
+}
+function listen(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById('answer').innerText=
+    'आवाज़ पहचानने के लिए Android Chrome में माइक्रोफोन सुविधा आज़माओ।';
+    return;
+  }
+  const r=new SR();
+  r.lang='hi-IN';
+  document.getElementById('status').innerText='सुन रहा हूँ...';
+  r.onresult=e=>{
+    const q=e.results[0][0].transcript;
+    document.getElementById('answer').innerText='तुमने कहा: '+q;
+    document.getElementById('status').innerText='SYSTEM ONLINE';
+    speak('तुमने कहा '+q);
+  };
+  r.onerror=()=>{
+    document.getElementById('status').innerText='फिर से कोशिश करो';
+  };
+  r.onend=()=>{
+    document.getElementById('status').innerText='SYSTEM ONLINE';
+  };
+  r.start();
+}
+</script>
+</body>
+</html>
